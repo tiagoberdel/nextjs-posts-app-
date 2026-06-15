@@ -34,8 +34,21 @@ export default function PostsPage() {
         onError: () => setIsSlow(false),
         })
 
-    if (isLoading) return <p>Loading... </p>
-    if (error) return <p>Something went wrong... </p>
+        if (isLoading) return (
+        <div className="flex h-screen w-screen items-center justify-center bg-slate-900">
+            <p className="text-3xl md:text-5xl font-bold text-white animate-pulse">
+                Loading...
+            </p>
+        </div>
+    )
+
+    if (error) return (
+        <div className="flex h-screen w-screen items-center justify-center bg-slate-900">
+            <p className="text-3xl md:text-5xl font-bold text-red-500">
+                Something went wrong...
+            </p>
+        </div>
+    )
     if (!data) return null
 
     return (
