@@ -22,7 +22,17 @@ export default function PostsPage() {
         ? `https://jsonplaceholder.typicode.com/posts?userId=${debouncedUserId}`
         : 'https://jsonplaceholder.typicode.com/posts'
 
-    const { data, error, isLoading } = useSWR<Post[]>(url, fetcher)
+    const [isSlow, setIsSlow] = useState(false)
+
+    const { data, error, isLoading } = useSWR<Post[]>(url, fetcher, {
+        revalidateOnReconnect: true,
+        shouldRetryOnError: true,
+        errorRetryInterval: 3000,
+        loadingTimeout: 3000,
+        onLoadingSlow: () => setIsSlow(true),
+        onSuccess: () => setIsSlow(false),
+        onError: () => setIsSlow(false),
+        })
 
     if (isLoading) return <p>Loading... </p>
     if (error) return <p>Something went wrong... </p>
@@ -38,7 +48,12 @@ export default function PostsPage() {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                 />
-            </div>
+            {isSlow && (
+                <p className="text-amber-400 text-sm animate-pulse">
+                    Connection is slow, requests are taking longer than expected...
+                </p>
+            )}    
+        </div>
 
             <div className="max-w-6xl mx-auto py-8 px-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
